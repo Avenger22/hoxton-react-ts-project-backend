@@ -1,7 +1,7 @@
 import {
   Item, User, Subscribe, Article, 
   Company, Service, Coach, Favorite
-} from '../types/typesDb'
+} from '../types/typesData'
 
 export let items:Item[] = []
 export let users:User[] = []
@@ -30,7 +30,7 @@ items = [
       name: "Artichoke Premium",
       price: "10",
       image: "/assets/images/artichoke-premium.jpg",
-      stock: 5,
+      stock: 7,
       type: "multivitamins",
       date: "2021/12/12",
       quantity: 0,

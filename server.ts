@@ -4,11 +4,11 @@ import express from 'express'
 import {
     items, users, services, companies, 
     favorites, subscribe, articles, coaches
-} from "./db/db"
+} from "./data/data"
 
 import {
     Item, Service, Coach, Article, Company, Subscribe, Favorite, User
-} from './types/typesDb'
+} from './types/typesData'
 
 // const express = require('express');
 // const bodyParser = require('body-parser');
@@ -26,27 +26,37 @@ app.use(cors())
 
 // #region 'Getting all arrray"
 app.get('/', (req, res) => {
-
-  res.send(`
-    <p style="display:grid; place-items: center; font-size: 26px; color: #000; font-weight: 900;">Welcome to AlbVitaFitness, use / and arrays for navigation in the backend server</p>
     
-    <div style = "display: grid; grid-template-rows: repeat(10,1fr); grid-gap: 35px; place-items:center; background-color: #191919; height: 100vh; margin: 0 0; paddig: 0 0; box-sizing: border-box;">
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/items">Go to Items</a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/services">Go to Services</a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/users">Go to Users</a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/companies">Go to Companies</a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/favorites">Go to Favorites</a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/subscribe">Go to Subscribe</a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/articles">Go to Articles</a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/coaches">Go to Coaches</a>
+  res.send(
+
+        `<p style="display:grid; place-items: center; font-size: 26px; color: #000; font-weight: 900;">Welcome to AlbVitaFitness, use / and arrays for navigation in the backend server</p>
         
-        <a style="color: #fff; text-decoration: none; font-size: 22px;">
-            If you want to go to individual items just add an number id after / like items/1 gets the first item
-        </a>
-        <a style="color: #fff; text-decoration: none; font-size: 22px;">
-            If you want to get random object from the array you can have endpoint random-["name of the array"] and you have use it in front end etc
-        </a>
-    </div>`);
+        <div style = "display: grid; grid-template-rows: repeat(11,0.8fr); grid-gap: 35px; place-items:center; background-color: #191919; height: 100vh; margin: 0 0; paddig: 0 0; box-sizing: border-box;">
+            
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/items">Go to Items</a>
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/services">Go to Services</a>
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/users">Go to Users</a>
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/companies">Go to Companies</a>
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/favorites">Go to Favorites</a>
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/subscribe">Go to Subscribe</a>
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/articles">Go to Articles</a>
+            <a style="color: #fff; text-decoration: none; font-size: 22px;" href = "/coaches">Go to Coaches</a>
+            
+            <a style="color: #fff; text-decoration: none; font-size: 22px;">
+                If you want to go to individual items just add an number id after / like items/1 gets the first item
+            </a>
+
+            <a style="color: #fff; text-decoration: none; font-size: 22px;">
+                If you want to get random object from the array you can have endpoint random-["name of the array"] and you have use it in front end etc
+            </a>
+
+            <a style="color: #fff; text-decoration: none; font-size: 22px;">
+                If you want to query like /items?type=proteins etc you can query based on all properties from here backend and fetch in frontend
+            </a>
+
+        </div>`
+
+    );
 
 });
 
@@ -55,10 +65,21 @@ app.get('/items', (req, res) => {
     const itemId = req.query.id
     const itemType = req.query.type
     const itemName = req.query.name
-    
+    const itemDate = req.query.date
+    const itemStock = req.query.stock
+    const itemDescription = req.query.description
+
+    // const matchTypeStock = items.filter(item => (item.type === String(itemType)) && (item.stock === Number(itemStock)) )
+
     const matchId = items.find(item => item.id === Number(itemId))
     const matchType = items.filter(item => item.type === String(itemType))
+    
+    const matchTypeStock = matchType.filter(item => item.stock === Number(item.stock))
+    
     const matchName = items.find(item => item.name === String(itemName))
+    const matchDate = items.filter(item => item.date === String(itemDate))
+    const matchStock = items.filter(item => item.stock === Number(itemStock))
+    const matchDescription = items.filter(item => item.description === String(itemDescription))
     
     if (matchId) {
         res.send(matchId);
@@ -71,6 +92,22 @@ app.get('/items', (req, res) => {
     else if (matchType.length > 0) {
         res.send(matchType)
     }
+
+    else if (matchDate.length > 0) {
+        res.send(matchDate)
+    }
+
+    else if (matchStock.length > 0) {
+        res.send(matchStock)
+    }
+
+    else if (matchDescription.length > 0) {
+        res.send(matchDescription)
+    }
+
+    else if (matchTypeStock.length > 0) {
+        res.send(matchTypeStock)
+    }
   
     else {
         res.send(items)
@@ -78,22 +115,43 @@ app.get('/items', (req, res) => {
   
 });
 
+// #region 'experimental items'
+// app.get('/items', (req, res) => {
+
+//     let itemsToSend = items
+//     let search = req.query.search as string
+  
+//     if (search) {
+//       itemsToSend = itemsToSend.filter(item =>
+//         item.name.toUpperCase().includes(search.toUpperCase())
+//       )
+//     }
+  
+//     for (const key in req.query) {
+
+//       const query = req.query[key]
+//       const itemKeys = Object.keys(items[0])
+  
+//       if (itemKeys.includes(key)) {
+//         itemsToSend = itemsToSend.filter(
+//           // @ts-ignore
+//           quote => String(quote[key]) === query
+//         )
+//       }
+
+//     }
+  
+//     res.send(itemsToSend)
+
+// })
+// #endregion
+
 app.get('/random-items', (req, res) => {
     const randomItem: Item = items[Math.floor(Math.random() * items.length)]
     res.send(randomItem);
 });
 
 app.get('/articles', (req, res) => {
-    // const filters:any = req.query;
-    // const filteredArticles: Article[] = articles.filter(article => {
-    //   let isValid:boolean = true;
-    //   for (let key in filters) {
-    //     console.log(key, article[key], filters[key]);
-    //     isValid = isValid && article[key] == filters[key];
-    //   }
-    //   return isValid;
-    // });
-    // res.send(filteredArticles);
     res.send(articles);
 });
 
@@ -281,28 +339,40 @@ app.get('/users/:id', (req, res) => {
 
 // #region 'Console log info about API'
 app.listen(PORT, () => {
-  console.log(`
-  -------------------------------------------------------------------------------------------------------------------
-  
-  -------------------------------------------------------------------------------------------------------------------
 
-  Welcome to AlbVitaFitness backend API, here we have all our data and stuff stored, you can acces it for good use!
-  
-  Server running on: http://localhost:${PORT}
-  
-  Go to items : http://localhost:${PORT}/items
-  Go to services : http://localhost:${PORT}/services
-  Go to coaches : http://localhost:${PORT}/coaches
-  Go to subscribe : http://localhost:${PORT}/subscribe
-  Go to users : http://localhost:${PORT}/users
-  Go to favorites : http://localhost:${PORT}/favorites
-  Go to companies : http://localhost:${PORT}/companies
-  Go to articles : http://localhost:${PORT}/articles
-  
-  If you want to go to individual items just add an number id after / like items/1 gets the first item
-  If you want to get random object from the array you can have endpoint random-["name of the array"] and you have use it in front end etc
-  -------------------------------------------------------------------------------------------------------------------
+  console.log(
 
-  -------------------------------------------------------------------------------------------------------------------------`);
+    `-------------------------------------------------------------------------------------
+
+    --------------------------------------------------------------------------------------
+
+        Welcome to AlbVitaFitness backend API, here we have all our data and stuff stored, 
+        you can acces it for good use!
+        
+        Server running on: http://localhost:${PORT}
+        
+            Go to items : http://localhost:${PORT}/items
+            Go to services : http://localhost:${PORT}/services
+            Go to coaches : http://localhost:${PORT}/coaches
+            Go to subscribe : http://localhost:${PORT}/subscribe
+            Go to users : http://localhost:${PORT}/users
+            Go to favorites : http://localhost:${PORT}/favorites
+            Go to companies : http://localhost:${PORT}/companies
+            Go to articles : http://localhost:${PORT}/articles
+            
+        If you want to go to individual items just add an number id after 
+        / like items/1 gets the first item
+        
+        If you want to get random object from the array you can have endpoint 
+        random-["name of the array"] and you have use it in front end etc
+
+        If you want to query like /items?type="proteins" or without "" etc you 
+        can query based on all properties from here backend and fetch in frontend
+
+    -----------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------`
+    
+    );
+
 })
 // #endregion
