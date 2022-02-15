@@ -320,6 +320,13 @@ app.post('/items', (req, res) => {
 });
 // #endregion
 
+// #region 'Delete requestes in all arrays'
+app.delete("/items/:id", (req, res) => {
+   const itemToDelete = items.filter((item) => item.id.toString() !== req.params.id)
+   res.status(204).send(); //to not let user wait for no response
+});
+// #endregion
+
 // #region 'Getting individual objects'
 app.get('/items/:id', (req, res) => {
 
