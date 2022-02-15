@@ -3,7 +3,7 @@ import express from 'express'
 
 import {
     items, users, services, companies, 
-    favorites, subscribe, articles, coaches
+    favorites, subscribe, articles, coaches, setItems
 } from "./data/data"
 
 import {
@@ -24,7 +24,7 @@ app.use(cors())
 // app.use(bodyParser.json());
 // #endregion
 
-// #region 'Getting request in all arrays"
+// #region 'Getting or Read request in all arrays"
 app.get('/', (req, res) => {
     
   res.send(
@@ -321,13 +321,73 @@ app.post('/items', (req, res) => {
 // #endregion
 
 // #region 'Delete requestes in all arrays'
-app.delete("/items/:id", (req, res) => {
-   const itemToDelete = items.filter((item) => item.id.toString() !== req.params.id)
-   res.status(204).send(); //to not let user wait for no response
+app.delete('/items/:id', (req, res) => {
+
+    // happy path: id is sent and it's a number and we find the dog and we delete the dog
+    // sad path: id is wrong format, or dog not found
+  
+    // get id
+    const id = Number(req.params.id);
+  
+    // find dog
+    const match = items.find((item) => item.id === id);
+  
+    // delete dog if it exists
+    if (match) {
+      const itemsFilteredDeleted = items.filter((item) => item.id !== id);
+      setItems(itemsFilteredDeleted)
+      res.send({ message: 'Item deleted successfully.' });
+    } 
+
+    else {
+      res.status(404).send({ error: 'Item not found.' });
+    }
+
 });
 // #endregion
 
-// #region 'Getting individual objects'
+// #region 'Patch and Put requestes in all arrays'
+app.patch('/items/:id', (req, res) => {
+
+    const id = Number(req.params.id);
+
+    // update keys from an existing resource
+    // we only update existing keys
+    // keys that are not in the resource should be ignored
+    // or we should send the user an error
+    // send back the updated resource
+  
+    // happy path: every key given exists and is the right type // ✅
+    // sad path: wrong keys or wrong types provided by user // ❌
+  
+    const itemToChange = items.find((item) => item.id === id);
+  
+    if (itemToChange) {
+
+      // we can only change the item if it exists
+      if (typeof req.body.name === 'string')  itemToChange.name = req.body.name;
+      if (typeof req.body.image === 'string') itemToChange.image = req.body.image;
+      if (typeof req.body.stock === 'number') itemToChange.stock = req.body.stock;
+      if (typeof req.body.quantity === 'number') itemToChange.quantity = req.body.quantity;
+      if (typeof req.body.description === 'string') itemToChange.description = req.body.description;
+      if (typeof req.body.price === 'string') itemToChange.price = req.body.price;
+      if (typeof req.body.discountPrice === 'string') itemToChange.discountPrice = req.body.discountPrice;
+      if (typeof req.body.favorite === 'boolean') itemToChange.favorite = req.body.favorite;
+      if (typeof req.body.type === 'string') itemToChange.type = req.body.type;
+      if (typeof req.body.date === 'string') itemToChange.date = req.body.date;
+      
+      res.send(itemToChange);
+
+    } 
+    
+    else {
+      res.status(404).send({ error: 'item not found, id is now in db.' });
+    }
+
+});
+// #endregion
+
+// #region 'Getting or Read individual objects'
 app.get('/items/:id', (req, res) => {
 
   const id = Number(req.params.id)
