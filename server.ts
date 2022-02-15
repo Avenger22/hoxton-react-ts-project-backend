@@ -1,4 +1,4 @@
-// #region 'Importing anc Config stuff'
+// #region 'Importing and Config stuff'
 import express from 'express'
 
 import {
@@ -24,7 +24,7 @@ app.use(cors())
 // app.use(bodyParser.json());
 // #endregion
 
-// #region 'Getting all arrray"
+// #region 'Getting request in all arrays"
 app.get('/', (req, res) => {
     
   res.send(
@@ -114,6 +114,24 @@ app.get('/items', (req, res) => {
     }
   
 });
+
+app.get('/quotes', (req, res) => {
+
+    let itemsToSend = items
+    let search = req.query.search as string
+  
+    if (typeof search === 'string') {
+  
+      console.log('Filtering items with search:', search);
+      
+      itemsToSend = itemsToSend.filter((item) => item.name.toUpperCase().includes(search.toUpperCase())) ||
+      itemsToSend.filter((item) =>  item.type.toUpperCase().includes(search.toUpperCase()))
+  
+    }
+    
+    res.send(itemsToSend)
+  
+  })
 
 // #region 'experimental items'
 // app.get('/items', (req, res) => {
@@ -215,6 +233,93 @@ app.get('/random-subscribe', (req, res) => {
 });
 // #endregion
 
+// #region 'Posting request in all arrays'
+app.post('/items', (req, res) => {
+
+    const name = req.body.name
+    const image = req.body.image
+    const price = req.body.price
+    const stock = req.body.stock
+    const type = req.body.type
+    const date = req.body.date
+    const favorite = req.body.favorite
+    const discountPrice = req.body.discountPrice
+    const quantity = req.body.quantity
+    const description = req.body.description
+
+    const errors = [];
+  
+    const lastItemId = Math.max(...items.map((item) => item.id));
+    const newId = lastItemId + 1;
+  
+    if (typeof name !== 'string') {
+      errors.push(`name missing or not a string.`);
+    }
+  
+    if (typeof image !== 'string') {
+      errors.push(`image missing or not a string.`);
+    }
+  
+    if (typeof price !== 'string') {
+      errors.push(`price missing or not a string.`);
+    }
+  
+    if (typeof description !== 'string') {
+      errors.push(`description missing or not a string.`);
+    }
+  
+    if (typeof discountPrice !== 'string') {
+      errors.push(`discountPrice missing or not a string.`);
+    }
+
+    if (typeof quantity !== 'number') {
+        errors.push(`quantity missing or not a number.`);
+      }
+
+    if (typeof favorite !== 'boolean') {
+    errors.push(`favorite missing or not a boolean.`);
+    }
+
+    if (typeof discountPrice !== 'string') {
+        errors.push(`discountPrice missing or not a string.`);
+    }
+  
+    if (typeof stock !== 'number') {
+        errors.push(`stock missing or not a number.`);
+    }
+
+    if (errors.length === 0) {
+  
+      const newItem: Item = {
+        id: newId, 
+        image: image,
+        name: name, 
+        price: price, 
+        stock: stock, 
+        type: type, 
+        date: date, 
+        quantity: quantity, 
+        description: description, 
+        discountPrice: discountPrice,
+        favorite: favorite
+      };
+        
+      items.push(newItem);
+  
+      // @ts-ignore
+      // quotes = [...quotes, newQuote]
+  
+      res.status(201).send(newItem);
+  
+    } 
+    
+    else {
+      res.status(400).send({ errors: errors });
+    }
+  
+});
+// #endregion
+
 // #region 'Getting individual objects'
 app.get('/items/:id', (req, res) => {
 
@@ -230,6 +335,21 @@ app.get('/items/:id', (req, res) => {
   }
 
 })
+
+// app.get('/items/categories/:type', (req, res) => {
+
+//     const type = String(req.params.type)
+//     const match = items.filter((item) => item.type === type)
+    
+//     if (match) {
+//       res.send(match)
+//     } 
+    
+//     else {
+//       res.status(404).send({ error: 'Item category not found.' })
+//     }
+  
+// })
 
 app.get('/coaches/:id', (req, res) => {
 

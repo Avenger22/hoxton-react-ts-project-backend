@@ -12,6 +12,11 @@ export type Item = {
     favorite: boolean
 }
 
+export type Category = {
+    id: number,
+    name: string
+}
+
 export type User = {
     id: number, 
     fullName: string, 

@@ -1,6 +1,6 @@
 import {
   Item, User, Subscribe, Article, 
-  Company, Service, Coach, Favorite
+  Company, Service, Coach, Favorite, Category
 } from '../types/typesData'
 
 export let items:Item[] = []
@@ -11,6 +11,46 @@ export let services:Service[] = []
 export let coaches:Coach[] = []
 export let favorites:Favorite[] = []
 export let subscribe:Subscribe[] = []
+export let categories:Category[] = []
+
+categories = [
+  {
+    id:1,
+    name: "Default"
+  },
+  {
+    id:2,
+    name: "aminoacids"
+  },
+  {
+    id:3,
+    name: "proteins"
+  },
+  {
+    id:4,
+    name: "creatine"
+  },
+  {
+    id:5,
+    name: "weight-gainers"
+  },
+  {
+    id:6,
+    name: "multivitamins"
+  },
+  {
+    id:7,
+    name: "weight-burner"
+  },
+  {
+    id:8,
+    name: "testosterone-boosters"
+  },
+  {
+    id:9,
+    name: "pre-workouts"
+  }
+]
 
 items = [
     {
