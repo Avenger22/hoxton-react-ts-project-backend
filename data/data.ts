@@ -13,7 +13,7 @@ export let favorites:Favorite[] = []
 export let subscribe:Subscribe[] = []
 export let categories:Category[] = []
 
-export function setItems(array) {
+export function setItems(array: Item[]) {
   items = array
 }
 
